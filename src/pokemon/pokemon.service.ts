@@ -10,6 +10,7 @@ import { Pokemon } from './entities/pokemon.entity';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from '../common/Dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
@@ -33,8 +34,19 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  // Paginacion haciendo que por defecto traiga 20 pokemones
+  findAll(paginationDto: PaginationDto) {
+
+    // Se obtienen los valores de limit y offset del DTO y se asignan valores por defecto
+    const {limit = 10, offset = 0} = paginationDto;
+
+    return this.pokemonModel.find()
+      .limit(limit) // Limitamos la cantidad de pokemones que se traeran
+      .skip(offset) // Saltamos los primeros 5 pokemones
+      .sort({
+        no: 1, // Ordenamos de forma ascendente la columna no
+      })
+      .select('-__v'); // Seleccionamos todos los campos menos el campo __v
   }
 
   async findOne(term: string) {

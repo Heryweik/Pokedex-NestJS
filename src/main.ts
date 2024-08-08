@@ -13,6 +13,12 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      
+      // Estas 2 configuraciones de transform permiten que se haga una conversion implicita de los tipos de datos que se reciben por los query parameters (URL)
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
 
