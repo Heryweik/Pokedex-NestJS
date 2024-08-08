@@ -11,14 +11,23 @@ import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginationDto } from '../common/Dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokemonService {
+
+  private defaultLimit: number;
+
   // Inyeccion de dependencias
   constructor(
     @InjectModel(Pokemon.name) // Se debe de inyectar el nombre del modelo ya que es un requerimiento de mongoose
     private readonly pokemonModel: Model<Pokemon>, // Inyectamos el modelo de la entidad Pokemon
-  ) {}
+
+    private readonly configService: ConfigService, // Inyectamos el servicio de configuracion
+  ) {
+    this.defaultLimit = this.configService.get<number>('defaultLimit'); // Obtenemos el valor de la variable de entorno defaultLimit
+    // Se inyecta en el constructor para que se ejecute una sola vez
+  }
 
   // Es asincrono ya que se realizara una operacion de lectura/escritura a la base de datos
   async create(createPokemonDto: CreatePokemonDto) {
@@ -38,7 +47,7 @@ export class PokemonService {
   findAll(paginationDto: PaginationDto) {
 
     // Se obtienen los valores de limit y offset del DTO y se asignan valores por defecto
-    const {limit = 10, offset = 0} = paginationDto;
+    const {limit = this.defaultLimit, offset = 0} = paginationDto;
 
     return this.pokemonModel.find()
       .limit(limit) // Limitamos la cantidad de pokemones que se traeran
