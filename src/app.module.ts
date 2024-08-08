@@ -22,7 +22,9 @@ import { JoiValidationSchema } from './config/joi.validation';
       }),
 
     // Connect to the database using Mongoose
-    MongooseModule.forRoot(process.env.MONGODB),
+    MongooseModule.forRoot(process.env.MONGODB, {
+      dbName: 'pokemonsdb', // Nombre de la base de datos
+    }),
 
     PokemonModule,
 
